@@ -1,25 +1,34 @@
-import express from 'express'
-import cors from 'cors'
-import 'dotenv/config'
-import connectDB from './config/mongodb.js'
-import connectClouldinary from './config/cloudinary.js'
-import userRouter from './routes/userRoute.js'
-import productRouter from './routes/productRoute.js'
-import cartRouter from './routes/cartRoute.js'
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import mongoose from "mongoose";
+import authRoutes from "./routes/AuthRoute.js";
 
-const app = express()
-const port = process.env.PORT || 4000
+dotenv.config();
 
-connectDB()
-connectClouldinary()
-app.use(express.json())
-app.use(cors())
-app.use('/uploads', express.static('uploads'));
-app.use('/api/user',userRouter);
-app.use('/api/product',productRouter)
-app.use('/api/cart',cartRouter)
+const app = express();
+const port = process.env.PORT || 3001;
+const databaseURL = process.env.DATABASE_URL;
 
-app.get('/',(req,res)=>{
-    res.send("API IS WORKING")
-})
-app.listen(port,()=>console.log('Server started on port : '+port))
+app.use(
+  cors({
+    origin: [process.env.ORIGIN],
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+app.use("/uploads/profiles",express.static("uploads/profiles"))
+app.use(cookieParser());
+app.use(express.json());
+
+app.use("/api/auth",authRoutes)
+
+const server = app.listen(port, () => {
+  console.log(`server is started at ${port}`);
+});
+
+mongoose
+  .connect(databaseURL)
+  .then(() => console.log("db connected"))
+  .catch((err) => console.log(err.message));

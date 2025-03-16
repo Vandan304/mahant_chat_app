@@ -1,9 +1,45 @@
 import mongoose from "mongoose";
+import { genSalt, hash } from "bcrypt";
+
 const userSchema = new mongoose.Schema({
-    name:{type:String,required:true},
-    email:{type:String,required:true,unique:true},
-    password:{type:String,required:true},
-    cartData:{type:Object,default:{}}
-},{minimize:false})
-const userModel = mongoose.model.user || mongoose.model('user',userSchema);
-export default userModel
+    email: {
+        type: String,
+        required: [true, "Email is required"],
+        unique: true,
+    },
+    password: {
+        type: String,
+        required: [true, "Password is required"],
+    },
+    firstName: {
+        type: String,
+        required: false,
+    },
+    lastName: {
+        type: String,
+        required: false,
+    },
+    images: {
+        type: String,
+        required: false,
+    },
+    color: {
+        type: Number,
+        required: false,
+    },
+    profileSetup: {
+        type: Boolean,
+        default: false,
+    }
+});
+
+// Hash password before saving
+userSchema.pre("save", async function (next) {
+    // if (!this.isModified("password")) return next();
+    const salt = await genSalt();
+    this.password = await hash(this.password, salt);
+    next();
+});
+
+const User = mongoose.model("User", userSchema); // Ensure model name matches reference in MessageModel
+export default User;
