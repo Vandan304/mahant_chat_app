@@ -9,7 +9,8 @@ import { FaPlus } from "react-icons/fa6";
 import { Avatar } from "@radix-ui/react-avatar";
 import Lottie from "react-lottie";
 import { animationDefaultOptions } from "@/lib/utils";
-import { HOST } from "../../../../../../utils/constants";
+import { HOST, SEARCH_CONTACTS_ROUTE } from "../../../../../../utils/constants";
+import { getColor } from "../../../../../../lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -17,8 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-// import { apiClient } from "@/lib/api-client";
-// import { SEARCH_CONTACTS_ROUTE } from "../../../../../../utils/constants";
+ import { apiClient } from "@/lib/api-client";
 import { ScrollArea } from "../../../../../../components/ui/scroll-area";
 import { useAppStore } from "../../../../../../store";
 const NewDM = () => {
@@ -44,13 +44,13 @@ const NewDM = () => {
       console.error({ error });
     }
   };
-  // const selectNewContact = (contact) =>
-  // {
-  //     setOpenNewContactModel(false)
-  //     setSelectedChatType("contact")
-  //     setSelectedChatData(contact)
-  //     setSearchedContacts([])
-  // }
+  const selectNewContact = (contact) =>
+  {
+      setOpenNewContactModel(false)
+      setSelectedChatType("contact")
+      setSelectedChatData(contact)
+      setSearchedContacts([])
+  }
   return (
     <>
       <TooltipProvider>
@@ -87,7 +87,7 @@ const NewDM = () => {
                   className="flex gap-3 items-center cursor-pointer"
                   onClick={()=>selectNewContact(contact)}
                 >
-                  <div className="relative w-14 h-14 rounded-full border-2 border-white flex items-center justify-center overflow-hidden">
+                  <div className="relative w-14 h-14 rounded-full flex items-center justify-center overflow-hidden">
                     <Avatar className="w-full h-full rounded-full">
                       {contact.images ? (
                         <img
@@ -97,14 +97,8 @@ const NewDM = () => {
                         />
                       ) : (
                         <div
-                          className="w-full h-full flex items-center justify-center text-lg font-bold rounded-full "
-                          style={{
-                            backgroundColor: contact.color,
-                            color: contact.color || "#fff",
-                            border: contact.color
-                              ? `2px solid ${contact.color}`
-                              : "none",
-                          }}
+                          className={`w-full h-full flex items-center justify-center text-lg font-bold rounded-full ${getColor(contact.color)}`}
+                          
                         >
                           {contact.firstName
                             ? contact.firstName.charAt(0).toUpperCase()
